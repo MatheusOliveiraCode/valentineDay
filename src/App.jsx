@@ -65,6 +65,12 @@ const PhotoCard = styled(motion.div)`
   &:hover {
     transform: scale(1.02);
   }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 `;
 
 const HeartDecoration = styled(motion.div)`
@@ -113,50 +119,16 @@ const HeartWrapper = styled.div`
   margin-bottom: 2rem;
 `;
 
-const HeartHalf = styled(motion.div)`
+const Heart = styled(motion.div)`
   position: absolute;
-  width: 150px;
+  width: 300px;
   height: 300px;
-  overflow: hidden;
-  
-  &::before {
-    content: '❤️';
-    position: absolute;
-    font-size: 300px;
-    line-height: 1;
-    transform: scale(1.1);
-  }
-`;
-
-const LeftHeartHalf = styled(HeartHalf)`
-  left: 0;
-  &::before {
-    left: 0;
-  }
-`;
-
-const RightHeartHalf = styled(HeartHalf)`
-  right: 0;
-  &::before {
-    right: 0;
-  }
-`;
-
-const HeartMessage = styled(motion.div)`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 1.5rem;
-  text-align: center;
-  opacity: 0;
-  width: 100%;
-  max-width: 600px;
-  padding: 2rem;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(5px);
-  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 300px;
+  line-height: 1;
+  transform: scale(1.1);
 `;
 
 const RingsContainer = styled.div`
@@ -231,11 +203,55 @@ const RingsMessage = styled(motion.div)`
   transition: opacity 0.3s ease;
 `;
 
+const HeartMessage = styled(motion.div)`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 1.5rem;
+  text-align: center;
+  opacity: 0;
+  width: 100%;
+  max-width: 600px;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  border-radius: 15px;
+`;
+
+const ScrollIndicator = styled(motion.div)`
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 1rem;
+  text-align: center;
+  opacity: 0;
+`;
+
 function App() {
   const [hearts, setHearts] = useState([]);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [ringsProgress, setRingsProgress] = useState(0);
   const [heartComplete, setHeartComplete] = useState(false);
+  
+  // Add photo URLs state
+  const [photoUrls] = useState([
+    'https://source.unsplash.com/random/800x800?love,1',
+    'https://source.unsplash.com/random/800x800?love,2',
+    'https://source.unsplash.com/random/800x800?love,3',
+    'https://source.unsplash.com/random/800x800?love,4',
+    'https://source.unsplash.com/random/800x800?love,5',
+    'https://source.unsplash.com/random/800x800?love,6',
+    'https://source.unsplash.com/random/800x800?love,7',
+    'https://source.unsplash.com/random/800x800?love,8',
+    'https://source.unsplash.com/random/800x800?love,9',
+    'https://source.unsplash.com/random/800x800?love,10',
+    'https://source.unsplash.com/random/800x800?love,11',
+    'https://source.unsplash.com/random/800x800?love,12',
+  ]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -303,26 +319,16 @@ function App() {
 
         <ParallaxSection speed={-10}>
           <PhotoCollage>
-            {[1, 2, 3, 4, 5, 6].map((index) => (
+            {[0, 1, 2, 3, 4, 5].map((index) => (
               <PhotoCard
                 key={index}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 whileHover={{ scale: 1.05 }}
+                onClick={() => window.open(photoUrls[index], '_blank')}
               >
-                <div style={{ 
-                  width: '100%', 
-                  height: '100%', 
-                  background: '#ffd6d6',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '2rem',
-                  color: '#ff6b6b'
-                }}>
-                  Foto {index}
-                </div>
+                <img src={photoUrls[index]} alt={`Foto ${index + 1}`} />
               </PhotoCard>
             ))}
           </PhotoCollage>
@@ -340,26 +346,16 @@ function App() {
 
         <ParallaxSection speed={-15}>
           <PhotoCollage>
-            {[7, 8, 9, 10, 11, 12].map((index) => (
+            {[6, 7, 8, 9, 10, 11].map((index) => (
               <PhotoCard
                 key={index}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 whileHover={{ scale: 1.05 }}
+                onClick={() => window.open(photoUrls[index], '_blank')}
               >
-                <div style={{ 
-                  width: '100%', 
-                  height: '100%', 
-                  background: '#ffd6d6',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '2rem',
-                  color: '#ff6b6b'
-                }}>
-                  Foto {index}
-                </div>
+                <img src={photoUrls[index]} alt={`Foto ${index + 1}`} />
               </PhotoCard>
             ))}
           </PhotoCollage>
@@ -367,46 +363,31 @@ function App() {
 
         <SplitHeartContainer>
           <HeartWrapper>
-            <LeftHeartHalf
-              initial={{ x: -150 }}
-              animate={{ 
-                x: heartComplete ? 0 : -150,
-                scale: heartComplete ? [1, 1.1, 1] : 1
-              }}
+            <Heart
+              initial={{ scale: 1 }}
+              animate={{ scale: [1, 1.1, 1] }}
               transition={{
-                x: { duration: 1, type: "spring", stiffness: 50 },
-                scale: {
-                  duration: 1.5,
-                  repeat: Infinity,
-                  repeatType: "reverse"
-                }
+                duration: 1.5,
+                repeat: Infinity,
+                repeatType: "reverse"
               }}
-            />
-            <RightHeartHalf
-              initial={{ x: 150 }}
-              animate={{ 
-                x: heartComplete ? 0 : 150,
-                scale: heartComplete ? [1, 1.1, 1] : 1
-              }}
-              transition={{
-                x: { duration: 1, type: "spring", stiffness: 50 },
-                scale: {
-                  duration: 1.5,
-                  repeat: Infinity,
-                  repeatType: "reverse"
-                }
-              }}
-            />
+            >
+              ❤️
+            </Heart>
             <HeartMessage
               initial={{ opacity: 0, y: 50 }}
-              animate={{ 
-                opacity: heartComplete ? 1 : 0,
-                y: heartComplete ? 0 : 50
-              }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
             >
-              "Nosso amor é como este coração: mesmo separado, sempre encontra seu caminho de volta para se tornar completo."
+              "Nosso amor é como este coração: sempre pulsando, sempre vivo."
             </HeartMessage>
+            <ScrollIndicator
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1 }}
+            >
+              Continue rolando para descobrir mais...
+            </ScrollIndicator>
           </HeartWrapper>
         </SplitHeartContainer>
 
