@@ -3,6 +3,19 @@ import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
+// Add window width hook
+const useWindowWidth = () => {
+  const [width, setWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return width;
+};
+
 const AppContainer = styled.div`
   background: linear-gradient(270deg, #FF6B6B, #FF8E8E, #FFB6C1,rgb(250, 171, 244)); /* Balanced loving red and pink gradient */
   background-size: 400% 400%;
@@ -34,6 +47,11 @@ const Title = styled(motion.h1)`
   margin-bottom: 1rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05); /* Even softer shadow */
   color: white;
+
+  @media (max-width: 768px) {
+    font-size: 2.5rem;
+    padding: 0 1rem;
+  }
 `;
 
 const Subtitle = styled(motion.p)`
@@ -41,6 +59,11 @@ const Subtitle = styled(motion.p)`
   max-width: 600px;
   line-height: 1.6;
   color: white;
+
+  @media (max-width: 768px) {
+    font-size: 1.2rem;
+    padding: 0 1rem;
+  }
 `;
 
 const ParallaxSection = styled(Parallax)`
@@ -58,10 +81,16 @@ const PhotoCollage = styled.div`
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
-  background: rgba(255, 107, 107, 0.8); /* Loving red with transparency */
+  background: rgba(255, 107, 107, 0.8);
   backdrop-filter: blur(10px);
   border-radius: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Slightly more prominent shadow */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
 `;
 
 const PhotoCard = styled(motion.div)`
@@ -114,6 +143,11 @@ const Message = styled(motion.div)`
   line-height: 1.6;
   padding: 2rem;
   color: white;
+
+  @media (max-width: 768px) {
+    font-size: 1.4rem;
+    padding: 1.5rem;
+  }
 `;
 
 const SplitHeartContainer = styled.div`
@@ -131,6 +165,11 @@ const HeartWrapper = styled.div`
   width: 300px;
   height: 300px;
   margin-bottom: 2rem;
+
+  @media (max-width: 768px) {
+    width: 200px;
+    height: 200px;
+  }
 `;
 
 const Heart = styled(motion.div)`
@@ -143,6 +182,12 @@ const Heart = styled(motion.div)`
   font-size: 300px;
   line-height: 1;
   transform: scale(1.1);
+
+  @media (max-width: 768px) {
+    width: 200px;
+    height: 200px;
+    font-size: 200px;
+  }
 `;
 
 const RingsContainer = styled.div`
@@ -180,6 +225,12 @@ const Ring = styled(motion.div)`
   position: relative;
   box-shadow: 0 0 20px ${props => props.isGolden ? 'rgba(255, 215, 0, 0.5)' : 'rgba(192, 192, 192, 0.5)'};
 
+  @media (max-width: 768px) {
+    width: 80px;
+    height: 80px;
+    border-width: 6px;
+  }
+
   @keyframes flash {
     0% {
       box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
@@ -216,6 +267,12 @@ const RingsMessage = styled(motion.div)`
   opacity: 0;
   transition: opacity 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+  @media (max-width: 768px) {
+    font-size: 1.2rem;
+    padding: 1.5rem;
+    bottom: 10%;
+  }
 `;
 
 const HeartMessage = styled(motion.div)`
@@ -234,6 +291,12 @@ const HeartMessage = styled(motion.div)`
   backdrop-filter: blur(5px);
   border-radius: 15px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+  @media (max-width: 768px) {
+    top: 20%;
+    font-size: 1.2rem;
+    padding: 1.5rem;
+  }
 `;
 
 const ScrollIndicator = styled(motion.div)`
@@ -245,6 +308,11 @@ const ScrollIndicator = styled(motion.div)`
   font-size: 1.2rem;
   text-align: center;
   opacity: 0;
+
+  @media (max-width: 768px) {
+    bottom: -100px;
+    font-size: 1rem;
+  }
 `;
 
 const ModalOverlay = styled(motion.div)`
@@ -296,6 +364,14 @@ const CloseButton = styled(motion.button)`
   color: #ff6b6b;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   
+  @media (max-width: 768px) {
+    top: -30px;
+    right: -30px;
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+  }
+  
   &:hover {
     transform: scale(1.1);
   }
@@ -318,6 +394,10 @@ const HeartParticle = styled(motion.div)`
   color: #ff69b4; /* Rosa para as partículas de coração */
   opacity: 0.9; /* Opacidade maior */
   filter: drop-shadow(0 0 15px rgba(255, 105, 180, 0.9)); /* Brilho mais intenso */
+
+  @media (max-width: 768px) {
+    font-size: 30px;
+  }
 `;
 
 function App() {
@@ -327,6 +407,7 @@ function App() {
   const [heartComplete, setHeartComplete] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [heartParticles, setHeartParticles] = useState([]);
+  const windowWidth = useWindowWidth();
   
   // Add photo URLs state
   const [photoUrls] = useState([
