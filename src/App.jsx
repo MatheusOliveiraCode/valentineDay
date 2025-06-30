@@ -281,21 +281,64 @@ const HeartMessage = styled(motion.div)`
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   text-align: center;
-  opacity: 0;
-  width: 100%;
-  max-width: 600px;
+  max-width: 800px;
   padding: 2rem;
-  background: rgba(255, 107, 107, 0.8);
-  backdrop-filter: blur(5px);
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 107, 107, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
+  opacity: 0;
+  z-index: 5;
 
   @media (max-width: 768px) {
-    top: 20%;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     padding: 1.5rem;
+  }
+`;
+
+const FlowerInstruction = styled(motion.div)`
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 2rem;
+  text-align: center;
+  padding: 1rem 2rem;
+  background: rgba(255, 107, 107, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+  z-index: 5;
+
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+    padding: 0.8rem 1.5rem;
+    top: 15%;
+  }
+`;
+
+const FlowerTitle = styled(motion.div)`
+  position: absolute;
+  top: 0%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 2.5rem;
+  text-align: center;
+  padding: 1rem 2rem;
+  background: rgba(255, 107, 107, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+  z-index: 5;
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+    padding: 0.8rem 1.5rem;
+    top: 5%;
   }
 `;
 
@@ -400,6 +443,115 @@ const HeartParticle = styled(motion.div)`
   }
 `;
 
+const FlowerSection = styled(ParallaxSection)`
+  background: rgba(255, 182, 193, 0.9);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+`;
+
+const FlowerContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Flower = styled(motion.div)`
+  position: relative;
+  width: 300px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    width: 200px;
+    height: 200px;
+  }
+`;
+
+const Petal = styled(motion.div)`
+  position: absolute;
+  width: 60px;
+  height: 120px;
+  background: linear-gradient(45deg, #FF69B4, #FF1493, #FF69B4);
+  border-radius: 60px 60px 0 0;
+  transform-origin: bottom center;
+  box-shadow: 0 0 20px rgba(255, 105, 180, 0.6);
+  filter: drop-shadow(0 0 10px rgba(255, 105, 180, 0.8));
+  pointer-events: none;
+
+  @media (max-width: 768px) {
+    width: 40px;
+    height: 80px;
+  }
+`;
+
+const FlowerCenter = styled(motion.div)`
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, #FFD700, #FFA500);
+  border-radius: 50%;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: white;
+  z-index: 10;
+  top: 40%;
+  left: 36%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+`;
+
+const FlowerMessage = styled(motion.div)`
+  position: absolute;
+  top: 50%;
+  left: 60%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 1.8rem;
+  text-align: center;
+  max-width: 800px;
+  padding: 2rem;
+  background: rgba(255, 107, 107, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
+  opacity: 0;
+  z-index: 5;
+
+  @media (max-width: 768px) {
+    font-size: 1.4rem;
+    padding: 1.5rem;
+    left: 65%;
+  }
+`;
+
+const Sparkle = styled(motion.div)`
+  position: absolute;
+  font-size: 1.5rem;
+  color: #FFD700;
+  pointer-events: none;
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
+
+  @media (max-width: 768px) {
+    font-size: 1.2rem;
+  }
+`;
+
 function App() {
   const [hearts, setHearts] = useState([]);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -407,6 +559,10 @@ function App() {
   const [heartComplete, setHeartComplete] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [heartParticles, setHeartParticles] = useState([]);
+  const [flowerOpen, setFlowerOpen] = useState(false);
+  const [sparkles, setSparkles] = useState([]);
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [pulledPetals, setPulledPetals] = useState([]);
   const windowWidth = useWindowWidth();
   
   // Add photo URLs state
@@ -485,6 +641,56 @@ function App() {
     createHeartParticles();
   };
 
+  const createSparkles = () => {
+    const newSparkles = [];
+    for (let i = 0; i < 20; i++) {
+      newSparkles.push({
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        delay: Math.random() * 2,
+        duration: Math.random() * 3 + 2,
+      });
+    }
+    setSparkles(newSparkles);
+  };
+
+  const handleFlowerClick = () => {
+    setFlowerOpen(true); // Always keep flower open
+    createSparkles();
+    
+    // Change message only on click
+    setCurrentMessageIndex((prev) => (prev + 1) % gratitudeMessages.length);
+    
+    // Get all available petals (not currently pulled)
+    const availablePetals = Array.from({ length: 12 }, (_, i) => i).filter(
+      i => !pulledPetals.includes(i)
+    );
+    
+    // If there's a currently pulled petal, return it and pull a new one
+    if (pulledPetals.length > 0 && availablePetals.length > 0) {
+      // Return current petal and pull new one
+      const newRandomPetal = availablePetals[Math.floor(Math.random() * availablePetals.length)];
+      setPulledPetals([newRandomPetal]); // Replace with new petal
+    } 
+    // If no petal is currently pulled, pull one
+    else if (pulledPetals.length === 0 && availablePetals.length > 0) {
+      const newRandomPetal = availablePetals[Math.floor(Math.random() * availablePetals.length)];
+      setPulledPetals([newRandomPetal]);
+    }
+  };
+
+  const gratitudeMessages = [
+    "Obrigado por sempre me ajudar quando preciso.",
+    "Você me apoia em todos os momentos, sou grato por isso.",
+    "Sempre que preciso reunir forças, me lembro de você.",
+    "És minhas inspiração diária.",
+    "Com você ao meu lado, tudo fica mais bonito.",
+    "Obrigado de verdade por se esforçar por mim.",
+    "Você é meu maior presente e meu amior milagre, meu amor.",
+    "Você é a flor mais bela do mundo <3 ."
+  ];
+
   return (
     <ParallaxProvider>
       <AppContainer>
@@ -498,7 +704,7 @@ function App() {
             animate={{ y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Feliz Dia dos Namorados
+            EU TE AMO 
           </Title>
           <Subtitle
             initial={{ y: 50 }}
@@ -610,6 +816,95 @@ function App() {
             </ScrollIndicator>
           </HeartWrapper>
         </SplitHeartContainer>
+
+        <FlowerSection speed={-5}>
+          <FlowerContainer>
+            <FlowerTitle
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              Fiz isso como agradecimento, pelo seu esforço por mim ❤️
+            </FlowerTitle>
+            <FlowerInstruction
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              Puxe uma pétala
+            </FlowerInstruction>
+            <Flower onClick={handleFlowerClick}>
+              {[...Array(12)].map((_, index) => (
+                <Petal
+                  key={index}
+                  style={{
+                    transform: `rotate(${index * 30}deg) translateY(-60px)`,
+                  }}
+                  animate={{
+                    rotate: pulledPetals.includes(index) ? 0 : (flowerOpen ? index * 30 + 10 : index * 30),
+                    scale: flowerOpen ? 1.05 : 1,
+                    y: pulledPetals.includes(index) ? -60 : -60,
+                    x: pulledPetals.includes(index) ? 200 : 0,
+                  }}
+                  transition={{
+                    duration: 0.8,
+                    ease: "easeOut",
+                  }}
+                />
+              ))}
+              <FlowerCenter
+                onClick={handleFlowerClick}
+                animate={{
+                  scale: flowerOpen ? [1, 1.2, 1] : 1,
+                  rotate: flowerOpen ? [0, 360] : 0,
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: flowerOpen ? Infinity : 0,
+                  ease: "linear",
+                }}
+              >
+                🌸
+              </FlowerCenter>
+            </Flower>
+
+            <FlowerMessage
+              animate={{
+                opacity: flowerOpen ? 1 : 0,
+                scale: flowerOpen ? 1 : 0.8,
+              }}
+              transition={{ duration: 0.5 }}
+            >
+              {gratitudeMessages[currentMessageIndex]}
+            </FlowerMessage>
+
+            {sparkles.map((sparkle) => (
+              <Sparkle
+                key={sparkle.id}
+                style={{
+                  left: `${sparkle.x}%`,
+                  top: `${sparkle.y}%`,
+                }}
+                initial={{
+                  scale: 0,
+                  opacity: 0,
+                }}
+                animate={{
+                  scale: [0, 1, 0],
+                  opacity: [0, 1, 0],
+                }}
+                transition={{
+                  duration: sparkle.duration,
+                  delay: sparkle.delay,
+                  repeat: flowerOpen ? Infinity : 0,
+                  repeatDelay: 1,
+                }}
+              >
+                ✨
+              </Sparkle>
+            ))}
+          </FlowerContainer>
+        </FlowerSection>
 
         <RingsContainer>
           <FixedWrapper>
