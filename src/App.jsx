@@ -552,6 +552,71 @@ const Sparkle = styled(motion.div)`
   }
 `;
 
+// 8-month celebration section styles
+const EightMonthsSection = styled(ParallaxSection)`
+  background: linear-gradient(135deg, rgba(255, 105, 180, 0.8), rgba(255, 99, 132, 0.85));
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+`;
+
+const EightTitle = styled(motion.h2)`
+  color: white;
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.25);
+
+  @media (max-width: 768px) {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+  }
+`;
+
+const EightGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, minmax(200px, 1fr));
+  gap: 1rem;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+`;
+
+const MonthCard = styled(motion.div)`
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 1rem;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+`;
+
+const MonthEmoji = styled.div`
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 0 8px rgba(255, 105, 180, 0.6));
+`;
+
+const MonthText = styled.p`
+  text-align: center;
+  color: #ff3b6f;
+  font-weight: 600;
+`;
+
 function App() {
   const [hearts, setHearts] = useState([]);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -691,6 +756,17 @@ function App() {
     "Você é a flor mais bela do mundo <3 ."
   ];
 
+  const eightMonthsMessages = [
+    { emoji: "💌", text: "Mês 1: Eu descobri uma felicidade que nunca imaginei." },
+    { emoji: "🤍", text: "Mês 2: Encontrei em ti minha paz." },
+    { emoji: "🌸", text: "Mês 3: Fiz da minha vida você." },
+    { emoji: "🍫", text: "Mês 4: Percebi o quanto sou amado." },
+    { emoji: "😍", text: "Mês 5: Você virou minha música favorita." },
+    { emoji: "🌹", text: "Mês 6: Percebi que meu amor nao tem limites." },
+    { emoji: "🔥", text: "Mês 7: Vencemos obstaculos sempre juntos." },
+    { emoji: "💖", text: "Mês 8: Te amo mais que ontem e menos que amanhã." }
+  ];
+
   return (
     <ParallaxProvider>
       <AppContainer>
@@ -786,6 +862,43 @@ function App() {
             ))}
           </PhotoCollage>
         </ParallaxSection>
+
+        <EightMonthsSection speed={-8}>
+          <EightTitle
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            8 meses contigo, meu amor
+          </EightTitle>
+
+          <EightGrid>
+            {eightMonthsMessages.map((item, idx) => (
+              <MonthCard
+                key={idx}
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: idx * 0.05 }}
+                whileHover={{ scale: 1.03 }}
+              >
+                <MonthEmoji>{item.emoji}</MonthEmoji>
+                <MonthText>{item.text}</MonthText>
+              </MonthCard>
+            ))}
+          </EightGrid>
+
+          {/* floating decorative hearts */}
+          {[...Array(12)].map((_, i) => (
+            <FloatingHeart
+              key={`em-${i}`}
+              style={{ top: `${10 + (i * 6) % 80}%`, left: `${(i * 13) % 90}%` }}
+              animate={{ y: [0, -20 - (i % 10), 0], opacity: [0.7, 1, 0.7] }}
+              transition={{ duration: 3 + (i % 3), repeat: Infinity, delay: i * 0.2 }}
+            >
+              {i % 3 === 0 ? '💗' : i % 3 === 1 ? '💞' : '💘'}
+            </FloatingHeart>
+          ))}
+        </EightMonthsSection>
 
         <SplitHeartContainer>
           <HeartWrapper>
@@ -1005,4 +1118,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;
