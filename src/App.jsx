@@ -1,7 +1,7 @@
 import { ParallaxProvider, Parallax } from 'react-scroll-parallax';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 // Add window width hook
 const useWindowWidth = () => {
@@ -617,6 +617,174 @@ const MonthText = styled.p`
   font-weight: 600;
 `;
 
+// 9-month interactive celebration styles
+const NineMonthsSection = styled(ParallaxSection)`
+  background: linear-gradient(135deg, rgba(255, 153, 204, 0.9), rgba(255, 107, 153, 0.9));
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+`;
+
+const NineTitle = styled(motion.h2)`
+  color: white;
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.25);
+
+  @media (max-width: 768px) {
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+  }
+`;
+
+const NineProgress = styled(motion.div)`
+  color: white;
+  font-size: 1.2rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  background: rgba(255, 107, 107, 0.8);
+  backdrop-filter: blur(6px);
+  padding: 0.8rem 1.2rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+`;
+
+const NinePath = styled.div`
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  height: 70vh;
+  border-radius: 20px;
+  margin: 0 auto;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1));
+  box-shadow: inset 0 0 40px rgba(255, 255, 255, 0.2);
+  z-index: 1;
+`;
+
+const HeartNode = styled(motion.button)`
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  color: #ff3b6f;
+  z-index: 2;
+
+  &:focus { outline: none; }
+
+  @media (max-width: 768px) {
+    width: 50px;
+    height: 50px;
+    font-size: 1.6rem;
+  }
+`;
+
+const NineTooltip = styled(motion.div)`
+  position: absolute;
+  min-width: 180px;
+  max-width: 240px;
+  padding: 0.8rem 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 14px;
+  color: #ff3b6f;
+  font-weight: 600;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  transform: translate(-50%, -120%);
+  text-align: center;
+  z-index: 3;
+  pointer-events: none;
+
+  @media (max-width: 768px) {
+    min-width: 140px;
+    font-size: 0.9rem;
+    transform: translate(-50%, -110%);
+  }
+`;
+
+// Starry love additions
+const LinesOverlay = styled.svg`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+`;
+
+const StarDot = styled(motion.button)`
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  background: radial-gradient(circle, #fff, #ffd1f0 60%, #ff90c8 100%);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 8px rgba(255, 105, 180, 0.6);
+  color: #ff3b6f;
+  z-index: 2;
+
+  &:focus { outline: none; }
+
+  @media (max-width: 768px) {
+    width: 22px;
+    height: 22px;
+    font-size: 16px;
+  }
+`;
+
+const CenterMessage = styled(motion.div)`
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 1.6rem;
+  text-align: center;
+  max-width: 720px;
+  padding: 1.2rem 2.6rem 1.2rem 1.6rem;
+  background: rgba(255, 107, 153, 0.9);
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  z-index: 3;
+
+  @media (max-width: 768px) {
+    font-size: 1.2rem;
+    max-width: 90%;
+  }
+`;
+
+const MessageClose = styled(motion.button)`
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: white;
+  color: #ff3b6f;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  z-index: 4;
+`;
+
 function App() {
   const [hearts, setHearts] = useState([]);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -746,26 +914,123 @@ function App() {
   };
 
   const gratitudeMessages = [
-    "Obrigado por sempre me ajudar quando preciso.",
-    "Você me apoia em todos os momentos, sou grato por isso.",
-    "Sempre que preciso reunir forças, me lembro de você.",
-    "És minhas inspiração diária.",
-    "Com você ao meu lado, tudo fica mais bonito.",
-    "Obrigado de verdade por se esforçar por mim.",
-    "Você é meu maior presente e meu amior milagre, meu amor.",
-    "Você é a flor mais bela do mundo <3 ."
+    "Obrigada por me fazer sorrir todos os dias.",
+    "Sou grata por cada abraço seu.",
+    "Você ilumina minha vida de um jeito único.",
+    "Obrigada por acreditar na gente, sempre.",
   ];
 
   const eightMonthsMessages = [
-    { emoji: "💌", text: "Mês 1: Eu descobri uma felicidade que nunca imaginei." },
-    { emoji: "🤍", text: "Mês 2: Encontrei em ti minha paz." },
-    { emoji: "🌸", text: "Mês 3: Fiz da minha vida você." },
-    { emoji: "🍫", text: "Mês 4: Percebi o quanto sou amado." },
-    { emoji: "😍", text: "Mês 5: Você virou minha música favorita." },
-    { emoji: "🌹", text: "Mês 6: Percebi que meu amor nao tem limites." },
-    { emoji: "🔥", text: "Mês 7: Vencemos obstaculos sempre juntos." },
-    { emoji: "💖", text: "Mês 8: Te amo mais que ontem e menos que amanhã." }
+    { emoji: "💘", text: "Mês 1: Eu descobri uma felicidade que nunca imaginei.." },
+    { emoji: "💐", text: "Mês 2: Encontrei em ti minha paz." },
+    { emoji: "🍰", text: "Mês 3: Fiz da minha vida você." },
+    { emoji: "🏞️", text: "Mês 4: Percebi o quanto sou amado." },
+    { emoji: "🎧", text: "Mês 5: Você virou minha música favorita." },
+    { emoji: "🎬", text: "Mês 6: Percebi que meu amor nao tem limites." },
+    { emoji: "🌙", text: "Mês 7: Vencemos obstaculos sempre juntos." },
+    { emoji: "💞", text: "Mês 8: Te amo mais que ontem e menos que amanhã." },
   ];
+
+  // Interação de 9 meses: constelação com um texto único
+  const loveConstellationText = "Em nove meses percebi que meu amor não cabe no universo, mas preenche todo meu coração.";
+  const [starLinks, setStarLinks] = useState([]); // {x1,y1,x2,y2}
+  const [stars, setStars] = useState([]); // {x,y,emoji}
+  const [showLoveText, setShowLoveText] = useState(false);
+  const [messageDiscovered, setMessageDiscovered] = useState(false);
+  const [constellationProgress, setConstellationProgress] = useState(0);
+
+  const createStars = useCallback((count = 18) => {
+    const container = document.getElementById('nine-section');
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+
+    // Gera pontos numa curva de coração e normaliza para o container
+    const raw = Array.from({ length: count }).map((_, i) => {
+      const t = (i / count) * (Math.PI * 2);
+      const x = 16 * Math.pow(Math.sin(t), 3);
+      const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+      return { x, y };
+    });
+    const minX = Math.min(...raw.map(p => p.x));
+    const maxX = Math.max(...raw.map(p => p.x));
+    const minY = Math.min(...raw.map(p => p.y));
+    const maxY = Math.max(...raw.map(p => p.y));
+    const w = rect.width * 0.8;
+    const h = rect.height * 0.6;
+    const offsetX = rect.width * 0.1;
+    const offsetY = rect.height * 0.2;
+
+    const newStars = raw.map((p, i) => ({
+      x: ((p.x - minX) / (maxX - minX)) * w + offsetX,
+      // invertido no eixo Y para coordenadas de tela
+      y: ((maxY - p.y) / (maxY - minY)) * h + offsetY,
+      emoji: i % 3 === 0 ? '💖' : '⭐️',
+    }));
+
+    setStars(newStars);
+    setStarLinks([]);
+    setConstellationProgress(0);
+    setShowLoveText(false);
+    setMessageDiscovered(false);
+  }, []);
+
+  useEffect(() => {
+    createStars();
+    const onResize = () => createStars();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [createStars]);
+
+  useEffect(() => {
+    if (!messageDiscovered && constellationProgress >= 9) {
+      setMessageDiscovered(true);
+      setShowLoveText(true);
+    }
+  }, [constellationProgress, messageDiscovered]);
+
+  // Ao revelar a mensagem, completar automaticamente todas as ligações da constelação
+  useEffect(() => {
+    if (!showLoveText) return;
+    if (stars.length < 2) return;
+    const desired = stars.length; // fechar o loop do coração
+    if (starLinks.length >= desired) return;
+    const full = [];
+    for (let i = 0; i < stars.length; i++) {
+      const a = stars[i];
+      const b = stars[(i + 1) % stars.length];
+      full.push({ x1: a.x, y1: a.y, x2: b.x, y2: b.y });
+    }
+    setStarLinks(full);
+    setConstellationProgress(desired);
+  }, [showLoveText, stars, starLinks.length]);
+
+  const connectNextEdge = () => {
+    setStarLinks(old => {
+      if (stars.length < 2 || constellationProgress >= stars.length) return old;
+      const a = stars[constellationProgress % stars.length];
+      const b = stars[(constellationProgress + 1) % stars.length];
+      const newLine = { x1: a.x, y1: a.y, x2: b.x, y2: b.y };
+      const exists = old.some(l => (
+        (l.x1 === newLine.x1 && l.y1 === newLine.y1 && l.x2 === newLine.x2 && l.y2 === newLine.y2) ||
+        (l.x1 === newLine.x2 && l.y1 === newLine.y2 && l.x2 === newLine.x1 && l.y2 === newLine.y1)
+      ));
+      // Aumenta o progresso em todo clique, contabilizando até 9 cliques
+      setConstellationProgress(p => Math.min(p + 1, 9));
+      if (!exists) {
+        return [...old, newLine];
+      } else {
+        const a2 = stars[(constellationProgress + 1) % stars.length];
+        const b2 = stars[(constellationProgress + 2) % stars.length];
+        const altLine = { x1: a2.x, y1: a2.y, x2: b2.x, y2: b2.y };
+        const altExists = old.some(l => (
+          (l.x1 === altLine.x1 && l.y1 === altLine.y1 && l.x2 === altLine.x2 && l.y2 === altLine.y2) ||
+          (l.x1 === altLine.x2 && l.y1 === altLine.y2 && l.x2 === altLine.x1 && l.y2 === altLine.y1)
+        ));
+        return altExists ? old : [...old, altLine];
+      }
+    });
+  };
+
 
   return (
     <ParallaxProvider>
@@ -899,6 +1164,66 @@ function App() {
             </FloatingHeart>
           ))}
         </EightMonthsSection>
+
+        <NineMonthsSection speed={-6} id="nine-section">
+          <NineTitle
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            9 meses — constelação de amor
+          </NineTitle>
+
+          <LinesOverlay>
+            <defs>
+              <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#ffd1f0" />
+                <stop offset="100%" stopColor="#ff90c8" />
+              </linearGradient>
+            </defs>
+            {starLinks.map((l, i) => (
+              <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke="url(#lineGrad)" strokeWidth="2" />
+            ))}
+          </LinesOverlay>
+
+          {stars.map((s, i) => (
+            <StarDot
+              key={i}
+              onClick={connectNextEdge}
+              initial={{ scale: 0.9, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              whileHover={{ scale: 1.07 }}
+              transition={{ duration: 0.35 }}
+              style={{ left: s.x, top: s.y }}
+            >
+              {s.emoji}
+            </StarDot>
+          ))}
+
+          {showLoveText && (
+            <CenterMessage
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.45 }}
+            >
+              {loveConstellationText}
+              <MessageClose
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowLoveText(false)}
+                aria-label="Fechar mensagem"
+              >
+                ×
+              </MessageClose>
+            </CenterMessage>
+          )}
+
+          {[...Array(6)].map((_, i) => (
+            <HeartParticle key={i} style={{ left: `${Math.random() * 90 + 5}%`, top: `${Math.random() * 80 + 10}%` }} />
+          ))}
+        </NineMonthsSection>
 
         <SplitHeartContainer>
           <HeartWrapper>
