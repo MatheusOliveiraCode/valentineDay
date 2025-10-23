@@ -766,6 +766,81 @@ const CenterMessage = styled(motion.div)`
   }
 `;
 
+
+const TenMonthsSection = styled(ParallaxSection)`
+  background: linear-gradient(135deg, rgba(255, 182, 193, 0.95), rgba(255, 140, 170, 0.95));
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+`;
+
+const TenTitle = styled(motion.h2)`
+  color: white;
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.25);
+
+  @media (max-width: 768px) {
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+  }
+`;
+
+const Lantern = styled(motion.button)`
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  cursor: pointer;
+  background: radial-gradient(circle, #fff, #ffe3ec 60%, #ffc1d6 100%);
+  box-shadow: 0 0 18px rgba(255, 200, 200, 0.7), 0 0 6px rgba(255, 105, 180, 0.6);
+  color: #ff3b6f;
+  z-index: 2;
+
+  &:focus { outline: none; }
+
+  @media (max-width: 768px) {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+`;
+
+const TenMessage = styled(motion.div)`
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 1.6rem;
+  text-align: center;
+  max-width: 720px;
+  padding: 1.2rem 2.6rem 1.2rem 1.6rem;
+  background: rgba(255, 107, 153, 0.92);
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  z-index: 3;
+
+  @media (max-width: 768px) {
+    font-size: 1.2rem;
+    max-width: 90%;
+  }
+`;
+
+const ConfettiHeart = styled(motion.div)`
+  position: absolute;
+  font-size: 1.4rem;
+  color: #ff3b6f;
+  pointer-events: none;
+  filter: drop-shadow(0 0 10px rgba(255, 105, 180, 0.8));
+`;
+
 const MessageClose = styled(motion.button)`
   position: absolute;
   top: 8px;
@@ -938,6 +1013,67 @@ function App() {
   const [showLoveText, setShowLoveText] = useState(false);
   const [messageDiscovered, setMessageDiscovered] = useState(false);
   const [constellationProgress, setConstellationProgress] = useState(0);
+
+  // Interação de 10 meses: lanternas criativas
+  const tenLanternText = "Há 10 meses, meu amor por ti já é 10 elevado à enésima potência. <3"
+  const [tenLanterns, setTenLanterns] = useState([]);
+  const [tenShowMessage, setTenShowMessage] = useState(false);
+  const [tenConfetti, setTenConfetti] = useState([]);
+
+  const createTenLanterns = useCallback(() => {
+    const container = document.getElementById('ten-section');
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    const count = 10;
+    const marginX = rect.width * 0.08;
+    const marginY = rect.height * 0.15;
+    const w = rect.width - marginX * 2;
+    const h = rect.height - marginY * 2;
+    const arr = Array.from({ length: count }).map((_, i) => ({
+      x: Math.round(marginX + Math.random() * w),
+      y: Math.round(marginY + Math.random() * h),
+      emoji: i % 2 === 0 ? '🏮' : '💖',
+      released: false
+    }));
+    setTenLanterns(arr);
+    setTenShowMessage(false);
+    setTenConfetti([]);
+  }, []);
+
+  useEffect(() => {
+    // Inicializa as lanternas quando a seção entra no DOM e atualiza no resize
+    createTenLanterns();
+    const onResize = () => createTenLanterns();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [createTenLanterns]);
+
+  const releaseLantern = (i) => {
+    setTenLanterns(prev => {
+      const next = [...prev];
+      if (next[i] && !next[i].released) {
+        next[i] = { ...next[i], released: true };
+      }
+      const releasedCount = next.filter(l => l.released).length;
+      if (releasedCount >= 9) {
+        setTenShowMessage(true);
+        setTenConfetti(old => {
+          if (old.length > 0) return old;
+          return Array.from({ length: 24 }).map(() => ({
+            x: Math.random() * 90,
+            delay: Math.random() * 0.8
+          }));
+        });
+      }
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    if (tenShowMessage) {
+      setTenLanterns(prev => prev.map(l => ({ ...l, released: true })));
+    }
+  }, [tenShowMessage]);
 
   const createStars = useCallback((count = 18) => {
     const container = document.getElementById('nine-section');
@@ -1224,6 +1360,67 @@ function App() {
             <HeartParticle key={i} style={{ left: `${Math.random() * 90 + 5}%`, top: `${Math.random() * 80 + 10}%` }} />
           ))}
         </NineMonthsSection>
+
+        <TenMonthsSection speed={-5} id="ten-section">
+          <TenTitle
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            10 meses - 10 meses de puro amor
+          </TenTitle>
+
+          {tenLanterns.map((l, i) => (
+            <Lantern
+              key={i}
+              onClick={() => releaseLantern(i)}
+              initial={{ scale: 0.9, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              whileHover={{ scale: 1.08 }}
+              animate={{
+                y: l.released ? -220 - (i % 5) * 30 : 0,
+                rotate: l.released ? (i % 2 === 0 ? 8 : -8) : 0
+              }}
+              transition={{ duration: 0.7 }}
+              style={{ left: l.x, top: l.y }}
+              aria-label={`Lanterna ${i + 1}`}
+            >
+              {l.emoji}
+            </Lantern>
+          ))}
+
+          {tenShowMessage && (
+            <TenMessage
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.45 }}
+            >
+              {tenLanternText}
+              <MessageClose
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setTenShowMessage(false)}
+                aria-label="Fechar mensagem de 10 meses"
+              >
+                ×
+              </MessageClose>
+            </TenMessage>
+          )}
+
+          {tenConfetti.map((c, idx) => (
+            <ConfettiHeart
+              key={`ten-cf-${idx}`}
+              style={{ left: `${c.x}%`, top: `-5%` }}
+              initial={{ y: -50, opacity: 0.9 }}
+              animate={{ y: 600, opacity: 0 }}
+              transition={{ duration: 4.5, delay: c.delay, repeat: Infinity, repeatType: 'loop' }}
+            >
+              {idx % 3 === 0 ? '💖' : idx % 3 === 1 ? '💞' : '💘'}
+            </ConfettiHeart>
+          ))}
+        </TenMonthsSection>
 
         <SplitHeartContainer>
           <HeartWrapper>
