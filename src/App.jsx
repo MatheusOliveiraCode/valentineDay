@@ -860,6 +860,102 @@ const MessageClose = styled(motion.button)`
   z-index: 4;
 `;
 
+// 11 meses — luzes do amor
+const ElevenMonthsSection = styled(ParallaxSection)`
+  background: linear-gradient(135deg, rgba(255, 200, 220, 0.95), rgba(255, 160, 190, 0.95));
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+`;
+
+const ElevenTitle = styled(motion.h2)`
+  color: white;
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.25);
+
+  @media (max-width: 768px) {
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+  }
+`;
+
+// Fio e lâmpadas (piscas-piscas)
+const Wire = styled(motion.div)`
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  top: 45%;
+  height: 2px;
+  background: rgba(255,255,255,0.35);
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  z-index: 1;
+`;
+
+const Bulb = styled(motion.div)`
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  z-index: 2;
+  box-shadow: 0 0 12px rgba(255,255,255,0.5);
+  background: ${({ $color }) => `radial-gradient(circle at 40% 35%, ${$color}, rgba(255,255,255,0.85) 40%, ${$color} 70%)`};
+  border: 2px solid rgba(255,255,255,0.65);
+
+  @media (max-width: 768px) {
+    width: 22px;
+    height: 22px;
+  }
+`;
+
+const ControlButton = styled(motion.button)`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: none;
+  background: white;
+  color: #ff3b6f;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+  cursor: pointer;
+  font-weight: 600;
+  margin: 0 auto;
+`;
+
+const ElevenMessage = styled(motion.div)`
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 1.6rem;
+  text-align: center;
+  max-width: 720px;
+  padding: 1.2rem 2.6rem 1.2rem 1.6rem;
+  background: rgba(255, 107, 153, 0.92);
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  z-index: 3;
+
+  @media (max-width: 768px) {
+    font-size: 1.2rem;
+    max-width: 90%;
+  }
+`;
+
+const GlowParticle = styled(motion.div)`
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff8d5 0%, #ffd700 60%, rgba(255, 215, 0, 0.1) 100%);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+  pointer-events: none;
+`;
+
 function App() {
   const [hearts, setHearts] = useState([]);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -1074,6 +1170,83 @@ function App() {
       setTenLanterns(prev => prev.map(l => ({ ...l, released: true })));
     }
   }, [tenShowMessage]);
+
+  // 11 meses — estados e lógica de luzes
+  const elevenLightsText = "Que nosso romance de natal seja tao lindo quanto o do ano anterior e nunca acabe. <3";
+  const [elevenBulbs, setElevenBulbs] = useState([]);
+  const [lightsOn, setLightsOn] = useState(false);
+  const [patternIndex, setPatternIndex] = useState(0);
+  const [patternCycles, setPatternCycles] = useState(0);
+  const [elevenShowMessage, setElevenShowMessage] = useState(false);
+  const [elevenParticles, setElevenParticles] = useState([]);
+
+  const createElevenBulbs = useCallback(() => {
+    const container = document.getElementById('eleven-section');
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    const count = 11;
+    const marginX = 60;
+    const width = rect.width - marginX * 2;
+    const baseY = rect.height * 0.45;
+    const amp = Math.max(22, rect.height * 0.08);
+    const palette = ['#e74c3c', '#2ecc71', '#ffd700', '#ffffff'];
+    const bulbs = Array.from({ length: count }).map((_, i) => {
+      const t = i / (count - 1);
+      const x = marginX + t * width;
+      const y = baseY + Math.sin(t * Math.PI) * amp;
+      const color = palette[i % palette.length];
+      return { id: `bulb-${i}`, x, y, color };
+    });
+    setElevenBulbs(bulbs);
+  }, []);
+
+  useEffect(() => {
+    createElevenBulbs();
+    const onResize = () => createElevenBulbs();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [createElevenBulbs]);
+
+  const startLights = () => setLightsOn(true);
+
+  useEffect(() => {
+    if (!lightsOn) return;
+    const iv = setInterval(() => {
+      setPatternIndex((p) => (p + 1) % 3);
+      setPatternCycles((c) => {
+        const next = c + 1;
+        if (next >= 3 && !elevenShowMessage) {
+          setElevenShowMessage(true);
+        }
+        return next;
+      });
+    }, 2400);
+    return () => clearInterval(iv);
+  }, [lightsOn, elevenShowMessage]);
+
+  useEffect(() => {
+    if (elevenShowMessage) {
+      const container = document.getElementById('eleven-section');
+      const rect = container ? container.getBoundingClientRect() : { width: 600, height: 300 };
+      setElevenParticles(
+        Array.from({ length: 20 }).map((_, k) => ({
+          id: `ep-${k}-${Date.now()}`,
+          x: Math.random() * rect.width,
+          y: Math.random() * rect.height,
+        }))
+      );
+    } else {
+      setElevenParticles([]);
+    }
+  }, [elevenShowMessage]);
+
+  const getBulbAnim = (i) => {
+    if (!lightsOn) return { animate: { opacity: 0.85, scale: 1 }, transition: { duration: 0.3 } };
+    const p = patternIndex % 3;
+    if (p === 0) return { animate: { opacity: [0.5, 1, 0.5] }, transition: { duration: 1.2, repeat: Infinity, delay: (i % 2) * 0.2 } };
+    if (p === 1) return { animate: { y: [0, -4, 0], scale: [1, 1.08, 1] }, transition: { duration: 1.4, repeat: Infinity, delay: i * 0.08 } };
+    return { animate: { scale: [1, 1.15, 1], opacity: [0.8, 1, 0.8] }, transition: { duration: 1, repeat: Infinity, delay: (i % 3) * 0.15 } };
+  };
 
   const createStars = useCallback((count = 18) => {
     const container = document.getElementById('nine-section');
@@ -1420,7 +1593,73 @@ function App() {
               {idx % 3 === 0 ? '💖' : idx % 3 === 1 ? '💞' : '💘'}
             </ConfettiHeart>
           ))}
-        </TenMonthsSection>
+      </TenMonthsSection>
+
+      <ElevenMonthsSection speed={-6} id="eleven-section">
+        <ElevenTitle
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          11 meses ao teu lado, ligue o pisca-pisca
+        </ElevenTitle>
+
+        <Wire />
+
+        {elevenBulbs.map((b, i) => {
+          const { animate, transition } = getBulbAnim(i);
+          return (
+            <Bulb
+              key={b.id}
+              style={{ left: b.x, top: b.y }}
+              $color={b.color}
+              animate={animate}
+              transition={transition}
+              aria-label={`Lâmpada ${i + 1}`}
+            />
+          );
+        })}
+
+        {!lightsOn && (
+          <ControlButton
+            onClick={startLights}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
+            aria-label="Ligar piscas-piscas"
+            style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', bottom: 24 }}
+          >
+            Ligar piscas-piscas
+          </ControlButton>
+        )}
+
+        {elevenShowMessage && (
+          <ElevenMessage
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+          >
+            {elevenLightsText}
+            <MessageClose
+              onClick={() => setElevenShowMessage(false)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              aria-label="Fechar mensagem de 11 meses"
+            >
+              ×
+            </MessageClose>
+          </ElevenMessage>
+        )}
+
+        {elevenParticles.map((p) => (
+          <GlowParticle
+            key={p.id}
+            style={{ left: p.x, top: p.y }}
+            initial={{ opacity: 0, y: 0 }}
+            animate={{ opacity: [0.25, 1, 0], y: -120 }}
+            transition={{ duration: 2.2, repeat: Infinity, repeatType: 'reverse', delay: Math.random() * 1.2 }}
+          />
+        ))}
+      </ElevenMonthsSection>
 
         <SplitHeartContainer>
           <HeartWrapper>
