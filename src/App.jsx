@@ -862,10 +862,13 @@ const MessageClose = styled(motion.button)`
 
 // 11 meses — luzes do amor
 const ElevenMonthsSection = styled(ParallaxSection)`
-  background: linear-gradient(135deg, rgba(255, 200, 220, 0.95), rgba(255, 160, 190, 0.95));
+  background: linear-gradient(135deg, #1b0f2e, #2a1250);
   backdrop-filter: blur(10px);
   position: relative;
   overflow: hidden;
+  min-height: 70vh;
+  z-index: 10;
+  isolation: isolate;
 `;
 
 const ElevenTitle = styled(motion.h2)`
@@ -874,6 +877,7 @@ const ElevenTitle = styled(motion.h2)`
   text-align: center;
   margin-bottom: 1rem;
   text-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  pointer-events: none;
 
   @media (max-width: 768px) {
     font-size: 2.2rem;
@@ -892,6 +896,7 @@ const Wire = styled(motion.div)`
   border-radius: 999px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   z-index: 1;
+  pointer-events: none;
 `;
 
 const Bulb = styled(motion.div)`
@@ -900,9 +905,25 @@ const Bulb = styled(motion.div)`
   height: 26px;
   border-radius: 50%;
   z-index: 2;
-  box-shadow: 0 0 12px rgba(255,255,255,0.5);
+  --c: ${({ $color }) => $color};
+  box-shadow: 0 0 16px rgba(255,255,255,0.6), 0 0 34px ${({ $color }) => $color};
   background: ${({ $color }) => `radial-gradient(circle at 40% 35%, ${$color}, rgba(255,255,255,0.85) 40%, ${$color} 70%)`};
   border: 2px solid rgba(255,255,255,0.65);
+  pointer-events: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: -18px;
+    top: -18px;
+    width: calc(100% + 36px);
+    height: calc(100% + 36px);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, var(--c) 60%, rgba(0,0,0,0) 100%);
+    opacity: 0.55;
+    filter: blur(16px);
+    pointer-events: none;
+  }
 
   @media (max-width: 768px) {
     width: 22px;
@@ -923,6 +944,12 @@ const ControlButton = styled(motion.button)`
   cursor: pointer;
   font-weight: 600;
   margin: 0 auto;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 24px;
+  z-index: 1000;
+  pointer-events: auto;
 `;
 
 const ElevenMessage = styled(motion.div)`
@@ -1184,18 +1211,28 @@ function App() {
     const container = document.getElementById('eleven-section');
     if (!container) return;
     const rect = container.getBoundingClientRect();
-    const count = 11;
-    const marginX = 60;
-    const width = rect.width - marginX * 2;
-    const baseY = rect.height * 0.45;
-    const amp = Math.max(22, rect.height * 0.08);
+    const rows = [1, 2, 3, 5]; // total 11
     const palette = ['#e74c3c', '#2ecc71', '#ffd700', '#ffffff'];
-    const bulbs = Array.from({ length: count }).map((_, i) => {
-      const t = i / (count - 1);
-      const x = marginX + t * width;
-      const y = baseY + Math.sin(t * Math.PI) * amp;
-      const color = palette[i % palette.length];
-      return { id: `bulb-${i}`, x, y, color };
+    const topY = rect.height * 0.22;
+    const rowGap = Math.max(56, rect.height * 0.11);
+    const sideMargin = Math.max(40, rect.width * 0.08);
+    const bulbs = [];
+    let idx = 0;
+    rows.forEach((count, rIndex) => {
+      const shrink = (rows.length - rIndex) * 0.08; // mais estreito no topo
+      const width = rect.width - sideMargin * 2 - rect.width * shrink;
+      const xStart = (rect.width - width) / 2;
+      const y = topY + rIndex * rowGap;
+      for (let i = 0; i < count; i++) {
+        const t = count === 1 ? 0.5 : i / (count - 1);
+        const jitterX = (Math.random() - 0.5) * Math.min(18, rect.width * 0.02);
+        const jitterY = (Math.random() - 0.5) * Math.min(10, rect.height * 0.02);
+        const x = xStart + t * width + jitterX;
+        const y2 = y + jitterY;
+        const color = palette[idx % palette.length];
+        bulbs.push({ id: `bulb-${idx}`, x, y: y2, color });
+        idx++;
+      }
     });
     setElevenBulbs(bulbs);
   }, []);
@@ -1604,7 +1641,10 @@ function App() {
           11 meses ao teu lado, ligue o pisca-pisca
         </ElevenTitle>
 
-        <Wire />
+        {/* Vários fios levemente inclinados para sugerir árvore */}
+        <Wire style={{ top: '28%', transform: 'rotate(2.8deg)' }} />
+        <Wire style={{ top: '46%', transform: 'rotate(-2deg)' }} />
+        <Wire style={{ top: '64%', transform: 'rotate(3.5deg)' }} />
 
         {elevenBulbs.map((b, i) => {
           const { animate, transition } = getBulbAnim(i);
