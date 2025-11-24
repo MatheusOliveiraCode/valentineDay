@@ -944,6 +944,13 @@ const ControlButton = styled(motion.button)`
   cursor: pointer;
   font-weight: 600;
   margin: 0 auto;
+  z-index: 1000;
+  pointer-events: auto;
+  transform-origin: center center;
+  will-change: transform;
+`;
+
+const ButtonDock = styled.div`
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -1661,15 +1668,16 @@ function App() {
         })}
 
         {!lightsOn && (
-          <ControlButton
-            onClick={startLights}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.98 }}
-            aria-label="Ligar piscas-piscas"
-            style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', bottom: 24 }}
-          >
-            Ligar piscas-piscas
-          </ControlButton>
+          <ButtonDock>
+            <ControlButton
+              onClick={startLights}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              aria-label="Ligar piscas-piscas"
+            >
+              Ligar piscas-piscas
+            </ControlButton>
+          </ButtonDock>
         )}
 
         {elevenShowMessage && (
